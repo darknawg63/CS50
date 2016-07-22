@@ -39,7 +39,7 @@ main (int argc, char* argv[])
 void
 rotate (char* str, char* key, int range)
 {
-  const int BASE_LOWER = 97;
+  const int BASE_LOWER = 97; // in ascii, lower cased alphabet starts counting at 97 
   const int BASE_UPPER = 65;
   int hash;
   int k = 0;

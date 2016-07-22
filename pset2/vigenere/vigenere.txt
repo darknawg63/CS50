@@ -1,0 +1,30 @@
+Vigenère’s Cipher: Working out the algorithm
+
+Below is our example from the CS50 specification:
+
+Meet me at the park at eleven am
+baco nb ac onb acon ba conbac on
+Negh zf av huf pcfx bt gzrwep oz
+
+Step 1.
+
+Let's say, for a given key, we want to match each letter of the unencrypted
+message with the corresponding letter of the key. For instance, the first
+letter of the message with the first letter of the key and so on...........
+
+The loop in will iterate through each character of the
+unencrypted message and map it to the key. The loop will also need to iterate
+and reset the key.
+
+for each char "i" in string
+  map char "j" in key to that char
+  if char j is equal to length of key
+    reset j
+
+Iteration 0: Map characters to keys
+
+Iteration 1: Map ascii values of key chars to 0 index
+
+a is ascii 97, base of lowers is 97
+ascii - base = n of zero index
+
