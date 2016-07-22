@@ -111,6 +111,8 @@ void init(void)
   for (i = 0; i < d; i++)
     for (j = 0; j < d; j++)
       {
+        // We want to switch the order of number 1 and 2 when there
+        // is an odd number of tiles (when d is even)
         if (count - 1 == 2 && d % 2 == 0)
           board[i][j] = count - 1 - 1;
         else if (count - 1 == 1 && d % 2 == 0)
