@@ -39,6 +39,7 @@ void init(void);
 void draw(void);
 bool move(int tile);
 bool won(void);
+void locate(int* y, int*x, int n);
 
 int main(int argc, string argv[])
 {
@@ -70,6 +71,11 @@ int main(int argc, string argv[])
 
   // initialize the board
   init();
+
+  int y, x, n;
+  n = 5;
+  locate(&y, &x, n);
+  printf("%d is located at board[%d][%d]\n", n, y, x);
 
   // draw the current state of the board
   draw();
@@ -168,3 +174,17 @@ bool won(void)
   // TODO
   return false;
 }
+
+void
+locate(int* y, int* x, int n)
+{
+  for (int i = 0; i < d; i++)
+    for (int j = 0; j < d; j++)
+      if (board[i][j] == n)
+        {
+          *y = i;
+          *x = j;
+        }
+  return;
+}
+
