@@ -201,7 +201,7 @@ void draw(void)
         {
           // where ever the value is 0, show an underscore :)
           if (board[i][j] == 0)
-            printf("  _ ");
+            printf("  _  ");
           else
             printf(" %2d  ", board[i][j]);
         }
@@ -221,9 +221,16 @@ bool move(int tile)
   int i, j;
 
   locate(&i, &j, tile);
+
   if(shift(&i, &j, RIGHT))
     return true;
-  //printf("location of tile %d is board[%d][%d]\n", tile, i, j);
+  if(shift(&i, &j, LEFT))
+    return true;
+  if(shift(&i, &j, UP))
+    return true;
+  if(shift(&i, &j, DOWN))
+    return true;
+
   return false;
 }
 
@@ -256,7 +263,7 @@ shift (int* y, int* x, int vector)
   switch (vector)
     {
       case RIGHT :
-        // Go right 
+        // Go right
         if (*x + 1 < d  && board[*y][*x + 1] == 0)
           {
             board[*y][*x + 1] = board[*y][*x];
@@ -287,8 +294,12 @@ shift (int* y, int* x, int vector)
           return false;
       case DOWN :
         // Go down
-        if (*y + 1 < d && board[*y - 1][*x] == 0)
-          return true;
+        if (*y + 1 < d && board[*y + 1][*x] == 0)
+          {
+            board[*y + 1][*x] = board[*y][*x];
+            board[*y][*x] = VACANT;
+            return true;
+          }
         else
           return false;
     }
