@@ -25,6 +25,12 @@
 // constants
 #define DIM_MIN 3
 #define DIM_MAX 9
+#define RIGHT 1
+#define LEFT 3
+#define UP 2
+#define DOWN 4
+#define VACANT 0
+
 
 // board
 int board[DIM_MAX][DIM_MAX];
@@ -39,7 +45,8 @@ void init(void);
 void draw(void);
 bool move(int tile);
 bool won(void);
-void locate(int* y, int*x, int n);
+void locate(int* y, int* x, int n);
+bool shift(int* y, int* x, int vector);
 
 int main(int argc, string argv[])
 {
@@ -67,18 +74,67 @@ int main(int argc, string argv[])
     }
 
   // greet user with instructions
-  //greet();
+  greet();
 
   // initialize the board
   init();
 
-  int y, x, n;
-  n = 5;
-  locate(&y, &x, n);
-  printf("%d is located at board[%d][%d]\n", n, y, x);
+  // accept moves until game is won
+  while (true)
+    {
+      // clear the screen
+      clear();
 
-  // draw the current state of the board
-  draw();
+      // draw the current state of the board
+      draw();
+
+      // log the current state of the board (for testing)
+      for (int i = 0; i < d; i++)
+        {
+          for (int j = 0; j < d; j++)
+            {
+              fprintf(file, "%i", board[i][j]);
+              if (j < d - 1)
+                {
+                  fprintf(file, "|");
+                }
+            }
+          fprintf(file, "\n");
+        }
+      fflush(file);
+
+      // check for win
+      if (won())
+        {
+          printf("ftw!\n");
+          break;
+        }
+
+      // prompt for move
+      printf("Tile to move: ");
+      int tile = GetInt();
+
+      // quit if user inputs 0 (for testing)
+      if (tile == 0)
+        {
+          break;
+        }
+
+      // log move (for testing)
+      fprintf(file, "%i\n", tile);
+      fflush(file);
+
+      // move if possible, else report illegality
+      if (!move(tile))
+        {
+          printf("\nIllegal move.\n");
+          usleep(500000);
+        }
+
+      // sleep thread for animation's sake
+      usleep(500000);
+    }
+
   // close log
   fclose(file);
 
@@ -162,6 +218,12 @@ void draw(void)
 bool move(int tile)
 {
   // TODO
+  int i, j;
+
+  locate(&i, &j, tile);
+  if(shift(&i, &j, RIGHT))
+    return true;
+  //printf("location of tile %d is board[%d][%d]\n", tile, i, j);
   return false;
 }
 
@@ -176,7 +238,7 @@ bool won(void)
 }
 
 void
-locate(int* y, int* x, int n)
+locate (int* y, int* x, int n)
 {
   for (int i = 0; i < d; i++)
     for (int j = 0; j < d; j++)
@@ -188,3 +250,48 @@ locate(int* y, int* x, int n)
   return;
 }
 
+bool
+shift (int* y, int* x, int vector)
+{
+  switch (vector)
+    {
+      case RIGHT :
+        // Go right 
+        if (*x + 1 < d  && board[*y][*x + 1] == 0)
+          {
+            board[*y][*x + 1] = board[*y][*x];
+            board[*y][*x] = VACANT;
+            return true;
+          }
+        else
+          return false;
+      case LEFT :
+        // Go left
+        if (*x - 1 >= d - d && board[*y][*x - 1] == 0)
+          {
+            board[*y][*x - 1] = board[*y][*x];
+            board[*y][*x] = VACANT;
+            return true;
+          }
+        else
+          return false;
+      case UP :
+        // Go up
+        if (*y - 1 >= d - d && board[*y - 1][*x] == 0)
+          {
+            board[*y - 1][*x] = board[*y][*x];
+            board[*y][*x] = VACANT;
+            return true;
+          }
+        else
+          return false;
+      case DOWN :
+        // Go down
+        if (*y + 1 < d && board[*y - 1][*x] == 0)
+          return true;
+        else
+          return false;
+    }
+
+  return false;
+}
