@@ -167,7 +167,6 @@ void greet(void)
  */
 void init(void)
 {
-  // TODO
   int i, j, count = d * d;
 
   for (i = 0; i < d; i++)
@@ -191,7 +190,6 @@ void init(void)
  */
 void draw(void)
 {
-  // TODO
   puts("");
   int i, j;
 
@@ -217,7 +215,6 @@ void draw(void)
  */
 bool move(int tile)
 {
-  // TODO
   int i, j;
 
   locate(&i, &j, tile);
@@ -240,10 +237,25 @@ bool move(int tile)
  */
 bool won(void)
 {
-  // TODO
+  int count = d - d + 1;
+  int i, j;
+
+  for (i = 0; i < d; i++)
+    for (j = 0; j < d; j++)
+      {
+        // last iteration is n^2. When count has maxed, is the tile a zero?
+        if (count == d * d && board[i][j] == 0)
+          return true;
+        if (board[i][j] != count)
+          return false;
+        count += 1;
+      }
   return false;
 }
 
+/**
+ * Get the coordinates of the current tile we want to move
+ */
 void
 locate (int* y, int* x, int n)
 {
@@ -264,6 +276,9 @@ shift (int* y, int* x, int vector)
     {
       case RIGHT :
         // Go right
+        //
+        // d is the boundary of the last element so x + 1 should
+        // be less than d
         if (*x + 1 < d  && board[*y][*x + 1] == 0)
           {
             board[*y][*x + 1] = board[*y][*x];
