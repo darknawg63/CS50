@@ -3,7 +3,7 @@ questions.txt
 Computer Science 50
 Problem Set 3
 
-0. TODO
-1. TODO
-2. TODO
-3. TODO
+0. Besides 4x4, the program also offers from 3x3 up to 9x9 dimensions boards.
+1. The data structure used for the game's board is a two-dimensional array of integers.
+2. The greet() function is called to greet the user when a game is started.
+3. The functions that still need to be implemented are init(), draw(), move(), and won().
