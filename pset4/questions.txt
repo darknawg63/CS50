@@ -1,0 +1,20 @@
+0.  The BMP format supports 1-, 4-, 8-, 16-, 24-, and 32-bit color. The GIF format supports 8 bit color. Both PNG and JPEG formats support 24 bit color.
+1.  The GIF format has support for simple animation.
+2.  Lossy compression discards some of the original quality (data) in an attempt to reduce the size of the file. Lossless compression make no reduction of quality and does not discard data.
+3.  JPEG is a lossy compression format.
+4.  When a file is deleted under the FAT disk format, the file is marked as being deleted. After that the cluster of the file are added to the list of free clusters. The actually data is left
+intact.
+5.  Destroying the drive physically rendering it unusable has the highest probability of ensuring that no data can be recovered.
+6.  The stdint.h is a header file in which integer types of certain size are declared
+7.  These types are used to provide exact width integers that do not vary across different systems and architectures.
+8.  8 bytes, 32 bytes, 32 bytes, and 16 bytes.
+9.  The first two bytes of a bitmap file must be the representation for BM (bitmap)  0x42 0x4D .
+10. bfSize is he size, in bytes, of the bitmap file. biSize is the number of bytes required by the structure.
+11. When biHeight is negative the bitmap is a top-down DIB and its origin is the upper-left corner.
+12. biBitCount specifies the BMP’s color depth (i.e., bits per pixel).
+13. fopen could return NULL if, for some reason the file could not be created or opened.
+14. Because we only want to read one element of sizeof(BITMAPFILEHEADER) at a time.
+15. Three bytes worth of zeros in order to make it a multiple of 4.
+16. Fseek sets the file position indicator.
+17. SEEK_CUR moves the position indicator x bytes from the current position.
+18. TODO
