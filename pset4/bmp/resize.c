@@ -13,22 +13,32 @@
 #include "bmp.h"
 
 #define MAX_SIZE 100
-#define FACTOR 4
+
+int size;
 
 void replay(BITMAPFILEHEADER bfh, BITMAPINFOHEADER bhi, RGBTRIPLE scanline[], FILE* fp);
 
 int main(int argc, char* argv[])
 {
     // ensure proper usage
-    if (argc != 3)
+    if (argc != 4)
     {
         printf("Usage: ./copy infile outfile\n");
         return 1;
     }
 
+    // scale to resize
+    size = atoi(argv[1]);
+
     // remember filenames
-    char* infile = argv[1];
-    char* outfile = argv[2];
+    char* infile = argv[2];
+    char* outfile = argv[3];
+
+    if (size < 1 || size > 100)
+    {
+        printf("%d not within 1-100 range \n", size);
+        return 2;
+    }
 
     // open input file
     FILE* inptr = fopen(infile, "r");
@@ -68,24 +78,6 @@ int main(int argc, char* argv[])
     // determine padding for scanlines
     int padding =  (4 - (bi.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
 
-    //BITMAPFIL/EHEADER bfNew;
-    //BITMAPINFOHEADER biNew;
-    //bfNew = bf;
-    //biNew = bi;
-    //biNew.biWidth *= FACTOR;
-    //biNew.biHeight *= FACTOR;
-
-    // recalculate padding for the new file
-    //int paddingNew = (4 - (biNew.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
-    //biNew.biSizeImage = (biNew.biWidth * sizeof(RGBTRIPLE) + paddingNew) * abs(biNew.biHeight);
-    //bfNew.bfSize = biNew.biSizeImage + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
-
-    // write outfile's BITMAPFILEHEADER
-    //fwrite(&bfNew, sizeof(BITMAPFILEHEADER), 1, outptr);
-
-    // write outfile's BITMAPINFOHEADER
-    //fwrite(&biNew, sizeof(BITMAPINFOHEADER), 1, outptr);
-
     RGBTRIPLE scanline[bi.biWidth];
 
     // iterate over infile's scanlines
@@ -104,10 +96,8 @@ int main(int argc, char* argv[])
             scanline[j] = triple;
 
             // write RGB triple to outfile
-            //fwrite(&triple, FACTOR * sizeof(RGBTRIPLE), 1, outptr);
+            //fwrite(&triple, size * sizeof(RGBTRIPLE), 1, outptr);
         }
-        // call replay function
-        replay(bf, bi, scanline, outptr);
 
         // skip over padding, if any
 
@@ -117,11 +107,8 @@ int main(int argc, char* argv[])
          */
         fseek(inptr, padding, SEEK_CUR);
 
-        // then add it back (to demonstrate how)
-        for (int k = 0; k < padding; k++)
-        {
-            //fputc(0x00, outptr);
-        }
+        // call replay function
+        replay(bf, bi, scanline, outptr);
     }
     // close infile
     fclose(inptr);
@@ -139,25 +126,45 @@ replay (BITMAPFILEHEADER bfh, BITMAPINFOHEADER bih, RGBTRIPLE scanline[], FILE* 
 {
     // length is the length of the scanline in pixels
     int length = bih.biWidth;
-    //BITMAPFILEHEADER bf = bfh;
+    BITMAPFILEHEADER bf = bfh;
     BITMAPINFOHEADER bi = bih;
-    bi.biWidth *= FACTOR;
-    //bi.biHeight *= FACTOR;
+    bi.biWidth *= size;
+    bi.biHeight *= size;
 
     // determine padding for scanlines
-    //int padding =  (4 - (bi.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
+    int padding =  (4 - (bi.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
+    // http://stackoverflow.com/questions/25713117/what-is-the-difference-between-bisizeimage-bisize-and-bfsize
+    bi.biSizeImage = (bi.biWidth * sizeof(RGBTRIPLE) + padding) * abs(bi.biHeight);
+    bf.bfSize = bi.biSizeImage + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
 
-    // for testing purposes
-    //RGBTRIPLE dummy;
+    // Only write header on the first call of this replay
+    static int writeheader = 0;
 
-    for (int i = 0; i < length; i++)
+    if (writeheader == 0)
     {
-        for (int j = 0; j < bi.biWidth; j++)
+        // write outfile's BITMAPFILEHEADER
+        fwrite(&bf, sizeof(BITMAPFILEHEADER), 1, fp);
+
+        // write outfile's BITMAPINFOHEADER
+        fwrite(&bi, sizeof(BITMAPINFOHEADER), 1, fp);
+
+        writeheader = 1;
+    }
+
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < length; j++)
         {
-        //    dummy = scanline[i];
-            printf("# ");
+            for (int k = 0; k < size; k++)
+                // write RGB triple to outfile
+                fwrite(&scanline[j], sizeof(RGBTRIPLE), 1, fp);
         }
-        puts("");
+
+        // add padding if any...
+        for (int l = 0; l < padding; l++)
+        {
+            fputc(0x00, fp);
+        }
     }
     return;
 }

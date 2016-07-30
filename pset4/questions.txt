@@ -14,7 +14,7 @@ intact.
 12. biBitCount specifies the BMP’s color depth (i.e., bits per pixel).
 13. fopen could return NULL if, for some reason the file could not be created or opened.
 14. Because we only want to read one element of sizeof(BITMAPFILEHEADER) at a time.
-15. Three bytes worth of zeros in order to make it a multiple of 4.
+15. Three. (3 bytes of zeros in order to make it a multiple of 4. Equivalent of 1 pixel.)
 16. Fseek sets the file position indicator.
 17. SEEK_CUR moves the position indicator x bytes from the current position.
-18. Who is this guy in the mugshot? Could be Ronald Reagan at a young age.
+18. Who is this guy in the mugshot? Elvis? Could it be Ronald Reagan at a young age? WTF?
