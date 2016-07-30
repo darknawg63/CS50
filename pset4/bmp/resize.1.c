@@ -12,6 +12,9 @@
 
 #include "bmp.h"
 
+#define MAX_SIZE 100
+#define FACTOR 4
+
 int main(int argc, char* argv[])
 {
     // ensure proper usage
@@ -60,14 +63,25 @@ int main(int argc, char* argv[])
         return 4;
     }
 
-    // write outfile's BITMAPFILEHEADER
-    fwrite(&bf, sizeof(BITMAPFILEHEADER), 1, outptr);
-
-    // write outfile's BITMAPINFOHEADER
-    fwrite(&bi, sizeof(BITMAPINFOHEADER), 1, outptr);
-
     // determine padding for scanlines
     int padding =  (4 - (bi.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
+
+    BITMAPFILEHEADER bfNew;
+    BITMAPINFOHEADER biNew;
+    bfNew = bf;
+    biNew = bi;
+    biNew.biWidth *= FACTOR;
+    biNew.biHeight *= FACTOR;
+    // recalculate padding for the new file
+    int paddingNew = (4 - (biNew.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
+    biNew.biSizeImage = (biNew.biWidth * sizeof(RGBTRIPLE) + paddingNew) * abs(biNew.biHeight);
+    bfNew.bfSize = biNew.biSizeImage + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+
+    // write outfile's BITMAPFILEHEADER
+    fwrite(&bfNew, sizeof(BITMAPFILEHEADER), 1, outptr);
+
+    // write outfile's BITMAPINFOHEADER
+    fwrite(&biNew, sizeof(BITMAPINFOHEADER), 1, outptr);
 
     // iterate over infile's scanlines
     for (int i = 0, biHeight = abs(bi.biHeight); i < biHeight; i++)
@@ -80,28 +94,26 @@ int main(int argc, char* argv[])
 
             // read RGB triple from infile
             fread(&triple, sizeof(RGBTRIPLE), 1, inptr);
-            if (triple.rgbtRed == 0xff && triple.rgbtBlue == 0x00 && triple.rgbtGreen == 0x00)
-            {
-                triple.rgbtRed = 0xff;
-                triple.rgbtBlue = 0xff;
-                triple.rgbtGreen = 0xff;
-            }
-
-            if (triple.rgbtRed != 0xff && triple.rgbtBlue == 0xff && triple.rgbtGreen != 0xff)
-                triple.rgbtBlue = 0x00;
 
             // write RGB triple to outfile
-            fwrite(&triple, sizeof(RGBTRIPLE), 1, outptr);
+            fwrite(&triple, FACTOR * sizeof(RGBTRIPLE), 1, outptr);
         }
 
         // skip over padding, if any
-        fseek(inptr, padding, SEEK_CUR);
+        /**
+         * JW: If we didn't skip over the padding, then during the next iteration
+         * instead of starting on a pixel, we'd be starting the scan line with padding.
+         */
+        fseek(inptr, paddingNew, SEEK_CUR);
 
         // then add it back (to demonstrate how)
-        for (int k = 0; k < padding; k++)
+        for (int k = 0; k < paddingNew; k++)
         {
             fputc(0x00, outptr);
         }
+
+        for (int l = 0; l < padding; l++)
+        ;
     }
 
     // close infile

@@ -17,4 +17,4 @@ intact.
 15. Three bytes worth of zeros in order to make it a multiple of 4.
 16. Fseek sets the file position indicator.
 17. SEEK_CUR moves the position indicator x bytes from the current position.
-18. TODO
+18. Who is this guy in the mugshot? Could be Ronald Reagan at a young age.
