@@ -1,0 +1,2 @@
+break dictionary.c:23
+  condition $bpnum strcmp(word, "street's") == 0

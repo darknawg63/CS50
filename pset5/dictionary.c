@@ -29,11 +29,12 @@ bool load(const char* dictionary)
   parent = newNode();
   Node* cursor = parent;
   Node* next;
+  int count = 1;
 
-  char word[LENGTH];
+  char word[LENGTH + 1];
   FILE* fp;
 
-  if ((fp= fopen(dictionary, "r")) != NULL)
+  if ((fp = fopen(dictionary, "r")) != NULL)
     {
       int i = 0;
       int m; // Track the aphabetical index
@@ -64,13 +65,17 @@ bool load(const char* dictionary)
                 {
                   word[i + 1] = '\0';
                   strncpy(cursor->word, word, LENGTH);
+                  printf("%s\n", word);
                   cursor = parent; //rewind back to the root
                   i = 0;
                   break;
                 }
               i++;
             }
+          count++;
         }
+      fclose(fp);
+      printf("number of entries %d\n", count);
       return true;
     }
   // TODO
@@ -86,12 +91,30 @@ unsigned int size(void)
   return 0;
 }
 
+void
+unloadHelper (Node* node)
+{
+  for (int i = 0; i < CAPACITY; i++)
+    {
+      if (node->child[i] != NULL)
+        {
+          unloadHelper(node->child[i]);
+        }
+    }
+  free(node);
+  return;
+}
 /**
  * Unloads dictionary from memory.  Returns true if successful else false.
  */
 bool unload(void)
 {
   // TODO
+  Node* cursor;
+  cursor = parent;
+
+  unloadHelper(cursor);
+
   return false;
 }
 

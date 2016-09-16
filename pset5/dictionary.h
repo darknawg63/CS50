@@ -18,7 +18,7 @@
 
 // maximum length for a word
 // (e.g., pneumonoultramicroscopicsilicovolcanoconiosis)
-#define LENGTH 45
+#define LENGTH 50
 #define CAPACITY 27
 
 // ascii lower case starting index
@@ -30,7 +30,7 @@
  */
 typedef struct _node
 {
-  char word[LENGTH];
+  char word[LENGTH + 1];
   struct _node* child[CAPACITY];
 } Node;
 
@@ -61,6 +61,8 @@ bool unload(void);
  */
 int hash(char ch);
 
+void
+unloadHelper(Node* node);
 
 /*
  * Helper function for allocation of new nodes
