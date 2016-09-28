@@ -442,9 +442,52 @@ char* htmlspecialchars(const char* s)
  * Checks, in order, whether index.php or index.html exists inside of path.
  * Returns path to first match if so, else NULL.
  */
+char* indexn = NULL;
+
 char* indexes(const char* path)
 {
   // TODO
+  char* html = "index.html";
+  char* php = "index.php";
+
+  indexn = malloc((strlen(path) + strlen(html)) * sizeof(char) + 1);
+  strcpy(indexn, path);
+  strcat(indexn, html);
+
+  // open input file: snippet taken from pset4 copy.c 
+  FILE* fp = fopen(indexn, "r");
+  if (fp == NULL)
+    {
+      printf("Could not open %s.\n", indexn);
+      free(indexn);
+      indexn = NULL;
+    }
+  else
+  if (fp != NULL)
+    {
+      fclose(fp);
+      return indexn;
+    }
+
+  indexn = malloc((strlen(path) + strlen(html)) * sizeof(char) + 1);
+  strcpy(indexn, path);
+  strcat(indexn, php);
+
+  // open input file: snippet taken from pset4 copy.c 
+  fp = fopen(indexn, "r");
+  if (fp == NULL)
+    {
+      printf("Could not open %s.\n", indexn);
+      free(indexn);
+      indexn = NULL;
+      return NULL;
+    }
+  else
+    {
+      fclose(fp);
+      return indexn;
+    }
+
   return NULL;
 }
 
@@ -730,10 +773,10 @@ bool parse(const char* line, char* abs_path, char* query)
           strcpy(method, token);
         }
       else
-      if (i == 0)
-        {
-          error(405);
-        }
+        if (i == 0)
+          {
+            error(405);
+          }
 
       // The variable 'header' is the string target + query
       if (token[0] == '/' && i == 1)
@@ -742,10 +785,10 @@ bool parse(const char* line, char* abs_path, char* query)
           strcpy(header, token);
         }
       else
-      if (i == 1)
-        {
-          error(501);
-        }
+        if (i == 1)
+          {
+            error(501);
+          }
 
       // The version should be restricted to version 1.1
       if ((strcmp(token, "HTTP/1.1") == 0) && i == 2)
@@ -754,10 +797,10 @@ bool parse(const char* line, char* abs_path, char* query)
           strcpy(version, token);
         }
       else
-      if (i == 2)
-        {
-          error(505);
-        }
+        if (i == 2)
+          {
+            error(505);
+          }
       // Here we use NULL because we want to pick up where we left off
       // If we used str instead of NULL we would start over from beginning
       token = strtok(NULL, " \r\n");
