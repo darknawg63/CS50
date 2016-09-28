@@ -454,7 +454,7 @@ char* indexes(const char* path)
   strcpy(indexn, path);
   strcat(indexn, html);
 
-  // open input file: snippet taken from pset4 copy.c 
+  // open input file: snippet taken from pset4 copy.c
   FILE* fp = fopen(indexn, "r");
   if (fp == NULL)
     {
@@ -473,7 +473,7 @@ char* indexes(const char* path)
   strcpy(indexn, path);
   strcat(indexn, php);
 
-  // open input file: snippet taken from pset4 copy.c 
+  // open input file: snippet taken from pset4 copy.c
   fp = fopen(indexn, "r");
   if (fp == NULL)
     {
@@ -772,12 +772,6 @@ bool parse(const char* line, char* abs_path, char* query)
           method = malloc(strlen(uri) * sizeof(char) + 1);
           strcpy(method, token);
         }
-      else
-        if (i == 0)
-          {
-            error(405);
-          }
-
       // The variable 'header' is the string target + query
       if (token[0] == '/' && i == 1)
         {
@@ -796,11 +790,6 @@ bool parse(const char* line, char* abs_path, char* query)
           version = malloc(strlen(line) * (sizeof(char) + 1));
           strcpy(version, token);
         }
-      else
-        if (i == 2)
-          {
-            error(505);
-          }
       // Here we use NULL because we want to pick up where we left off
       // If we used str instead of NULL we would start over from beginning
       token = strtok(NULL, " \r\n");
