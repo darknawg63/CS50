@@ -35,6 +35,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <ctype.h>
 
 // types
 typedef char BYTE;
@@ -463,11 +464,11 @@ char* indexes(const char* path)
       indexn = NULL;
     }
   else
-  if (fp != NULL)
-    {
-      fclose(fp);
-      return indexn;
-    }
+    if (fp != NULL)
+      {
+        fclose(fp);
+        return indexn;
+      }
 
   indexn = malloc((strlen(path) + strlen(html)) * sizeof(char) + 1);
   strcpy(indexn, path);
@@ -704,6 +705,8 @@ const char* lookup(const char* path)
     return "image/jpeg";
   if (strcmp(mime, ".png") == 0)
     return "image/png";
+    if (strcmp(mime, ".ico") == 0)
+    return "image/x-icon";
 
   return NULL;
 }
@@ -802,10 +805,29 @@ bool parse(const char* line, char* abs_path, char* query)
       token = NULL;
       //query = malloc(strlen(line) * (sizeof(char) + 1));
       token = strtok(header, "?");
+
+      // http://stackoverflow.com/questions/2661766/c-convert-a-mixed-case-string-to-all-lower-case
+      int j = 0;
+
+      while(token[j])
+        {
+          token[j] = tolower(token[j]);
+          j++;
+        }
+
       strcpy(abs_path, token);
       token = strtok(NULL, "?");
-      strcpy(query, token);
-      query = strchr(header, '?');
+
+      // If that substring is absent (even if a ? is present), then query should be "", thereby consuming one byte, whereby query[0] is '\0'.
+      if (token == NULL)
+        {
+          query = "";
+        }
+      else
+        {
+          strcpy(query, token);
+          //query = strchr(header, '?');
+        }
 
       free(method);
       free(header);
@@ -816,6 +838,15 @@ bool parse(const char* line, char* abs_path, char* query)
     }
   else
     {
+      // http://stackoverflow.com/questions/2661766/c-convert-a-mixed-case-string-to-all-lower-case
+      int j = 0;
+
+      while( header[j] )
+        {
+          header[j] = tolower(header[j]);
+          j++;
+        }
+
       strcpy(abs_path, header);
 
       free(method);
