@@ -689,24 +689,62 @@ const char* lookup(const char* path)
 {
   // TODO
 
-  const char* mime = strchr(path, '.');
+  char* path_copy = NULL;
+  path_copy = malloc(strlen(path) * (sizeof(char) + 1));
+  strcpy(path_copy, path);
+  char* mime = strchr(path_copy, '.');
+
+  // http://stackoverflow.com/questions/2661766/c-convert-a-mixed-case-string-to-all-lower-case
+  int i = 0;
+
+  while(mime[i])
+    {
+      mime[i] = tolower(mime[i]);
+      i++;
+    }
 
   if (strcmp(mime, ".css") == 0)
-    return "text/css";
+    {
+      free(path_copy);
+      return "text/css";
+    }
   if (strcmp(mime, ".html") == 0)
-    return "text/html";
+    {
+      free(path_copy);
+      return "text/html";
+    }
   if (strcmp(mime, ".js") == 0)
-    return "text/javascript";
+    {
+      free(path_copy);
+      return "text/javascript";
+    }
   if (strcmp(mime, ".php") == 0)
-    return "text/x-php";
+    {
+      free(path_copy);
+      return "text/x-php";
+    }
   if (strcmp(mime, ".gif") == 0)
-    return "image/gif";
+    {
+      free(path_copy);
+      return "image/gif";
+    }
   if (strcmp(mime, ".jpg") == 0)
-    return "image/jpeg";
+    {
+      free(path_copy);
+      return "image/jpeg";
+    }
   if (strcmp(mime, ".png") == 0)
-    return "image/png";
-    if (strcmp(mime, ".ico") == 0)
-    return "image/x-icon";
+    {
+      free(path_copy);
+      return "image/png";
+    }
+  if (strcmp(mime, ".ico") == 0)
+    {
+      free(path_copy);
+      return "image/x-icon";
+    }
+  if (path_copy != NULL)
+    free(path_copy);
 
   return NULL;
 }
@@ -805,16 +843,6 @@ bool parse(const char* line, char* abs_path, char* query)
       token = NULL;
       //query = malloc(strlen(line) * (sizeof(char) + 1));
       token = strtok(header, "?");
-
-      // http://stackoverflow.com/questions/2661766/c-convert-a-mixed-case-string-to-all-lower-case
-      int j = 0;
-
-      while(token[j])
-        {
-          token[j] = tolower(token[j]);
-          j++;
-        }
-
       strcpy(abs_path, token);
       token = strtok(NULL, "?");
 
@@ -826,7 +854,6 @@ bool parse(const char* line, char* abs_path, char* query)
       else
         {
           strcpy(query, token);
-          //query = strchr(header, '?');
         }
 
       free(method);
@@ -838,17 +865,7 @@ bool parse(const char* line, char* abs_path, char* query)
     }
   else
     {
-      // http://stackoverflow.com/questions/2661766/c-convert-a-mixed-case-string-to-all-lower-case
-      int j = 0;
-
-      while( header[j] )
-        {
-          header[j] = tolower(header[j]);
-          j++;
-        }
-
       strcpy(abs_path, header);
-
       free(method);
       free(header);
       free(version);
